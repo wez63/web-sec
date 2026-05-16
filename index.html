@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الموقع الشامل لاختبارات أمن تطبيقات الويب - ITBS202</title>
+    <style>
+        :root {
+            --primary-color: #0891b2; /* أزرق سماوي (Cyan) */
+            --primary-dark: #164e63;
+            --secondary-color: #0284c7;
+            --success-color: #059669;
+            --danger-color: #e11d48;
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-color: #0f172a;
+            --border-color: #cbd5e1;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1050px;
+            margin: 0 auto;
+            background-color: var(--card-bg);
+            padding: 25px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(8, 145, 178, 0.08);
+            border: 1px solid #bae6fd;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        h1 {
+            color: var(--primary-dark);
+            margin: 0 0 8px 0;
+            font-size: 1.9rem;
+            font-weight: 800;
+        }
+
+        p.subtitle {
+            color: #475569;
+            margin: 0;
+            font-size: 0.95rem;
+        }
+
+        /* شريط التبويبات الممتد */
+        .tabs-wrapper {
+            position: relative;
+            margin-bottom: 25px;
+        }
+
+        .tabs-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-behavior: smooth;
+            gap: 5px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+            scrollbar-width: thin;
+            scrollbar-color: var(--primary-color) #e2e8f0;
+        }
+
+        .tabs-container::-webkit-scrollbar {
+            height: 6px;
+        }
+        .tabs-container::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .tab-btn {
+            white-space: nowrap;
+            padding: 10px 15px;
+            background-color: #f1f5f9;
+            color: #334155;
+            border: 1px solid var(--border-color);
+            border-bottom: none;
+            border-radius: 8px 8px 0 0;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .tab-btn:hover {
+            background-color: #e0f2fe;
+            color: var(--secondary-color);
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: 0 -2px 10px rgba(8, 145, 178, 0.2);
+        }
+
+        /* محتوى الأسئلة */
+        .section-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .section-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px dashed #7dd3fc;
+        }
+
+        .section-title {
+            color: var(--primary-dark);
+            margin: 0;
+            font-size: 1.3rem;
+            border-right: 4px solid var(--primary-color);
+            padding-right: 10px;
+        }
+
+        .question-count-badge {
+            background-color: #e0f2fe;
+            color: #0369a1;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+
+        .question-card {
+            background-color: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            direction: ltr;
+            text-align: left;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            border-right: 4px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .question-card:hover {
+            border-right-color: var(--primary-color);
+        }
+
+        .question-text {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--primary-dark);
+            margin-bottom: 15px;
+        }
+
+        .options-group {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option-label {
+            display: flex;
+            align-items: flex-start;
+            padding: 12px 15px;
+            background-color: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+            color: #1e293b;
+        }
+
+        .option-label:hover {
+            background-color: #f1f5f9;
+            border-color: #94a3b8;
+        }
+
+        .option-label input[type="radio"] {
+            margin-right: 12px;
+            margin-top: 3px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+
+        /* التصحيح */
+        .correct-answer {
+            background-color: #d1fae5 !important;
+            border-color: var(--success-color) !important;
+            color: #065f46 !important;
+            font-weight: bold;
+        }
+
+        .wrong-answer {
+            background-color: #ffe4e6 !important;
+            border-color: var(--danger-color) !important;
+            color: #9f1239 !important;
+        }
+
+        .submit-area {
+            margin-top: 30px;
+        }
+
+        .action-btn {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.15rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.25);
+        }
+
+        .action-btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .score-display {
+            margin-top: 20px;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.3rem;
+            border-radius: 10px;
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>بنك أسئلة أمن تطبيقات الويب</h1>
+        <p class="subtitle">ITBS202 - شامل جميع الوحدات، الأنشطة، الواجبات، واختبارات الميد والفاينل</p>
+    </header>
+
+    <div class="tabs-wrapper">
+        <div class="tabs-container" id="tabsBar">
+            </div>
+    </div>
+
+    <form id="quizForm">
+        <div id="contentSections">
+            </div>
+    </form>
+</div>
+
+<script>
+    // قاعدة بيانات شاملة مستخرجة من جميع الملفات المرفقة (أكثر من 200 سؤال)
+    const completeDatabase = [
+        // =====================================
+        // الوحدات 1 إلى 10
+        // =====================================
+        {
+            id: "u1", title: "الوحدة 1",
+            questions: [
+                { q: "Which protocol does HTTP operate over?", opts: ["FTP", "TCP", "UDP", "SMTP"], ans: 1 },
+                { q: "Which HTTP method is designed for retrieving resources?", opts: ["POST", "GET", "PUT", "DELETE"], ans: 1 },
+                { q: "What is the purpose of the Content-Type HTTP header?", opts: ["Specifies the type of encoding used", "Specifies the length of the message body", "Specifies the type of content in the message body", "Specifies the transfer encoding used"], ans: 2 },
+                { q: "Which HTTP status code indicates that the request was successful?", opts: ["404", "500", "200", "401"], ans: 2 },
+                { q: "What does the Set-Cookie header do?", opts: ["Issues cookies to the client for future requests", "Specifies the type of content encoding the client will accept", "Specifies the host name for the request", "Submits credentials for authentication"], ans: 0 },
+                { q: "Which HTTP header field submits credentials for authentication?", opts: ["Content-Type", "Authorization", "Cookie", "Accept"], ans: 1 },
+                { q: "What is the main characteristic of HTTP?", opts: ["It is stateful", "It is stateless", "It is a scripting language", "It is a database"], ans: 1 },
+                { q: "What is the main advantage of using Ajax in web applications?", opts: ["Full page reloads", "Smoother user interfaces", "Increased server load", "Static content delivery"], ans: 1 },
+                { q: "Which of the following is true about JSON?", opts: ["It is a markup language", "It can be processed directly by JavaScript interpreters", "It is used to style web pages", "It is a database query language"], ans: 1 },
+                { q: "What is a potential downside of using Ajax in web applications?", opts: ["Reduced interactivity", "Increased attack surface", "Slower performance", "Less dynamic content"], ans: 1 }
+            ]
+        },
+        {
+            id: "u2", title: "الوحدة 2",
+            questions: [
+                { q: "What is the primary purpose of using HTTPS in data protection?", opts: ["To ensure server-side validation", "To encrypt data in transit", "To manage user sessions", "To handle errors properly"], ans: 1 },
+                { q: "Which server-side control involves securely managing user sessions to prevent hijacking and fixation attacks?", opts: ["Authentication and Authorization", "Data Protection", "Session Management", "Logging and Monitoring"], ans: 2 },
+                { q: "Which server-side control involves keeping detailed logs of user activities and monitoring for suspicious behavior?", opts: ["Input Validation", "Access Control", "Data Protection", "Logging and Monitoring"], ans: 3 },
+                { q: "What are the two steps involved in the authentication process?", opts: ["Verification and Authorization", "Identification and Confirmation", "Authentication and Encryption", "Validation and Verification"], ans: 1 },
+                { q: "Why is Digest access authentication vulnerable to a man-in-the-middle attack?", opts: ["It uses plaintext passwords", "It can be tricked into downgrading security", "It requires a password reset", "It lacks nonce values"], ans: 1 },
+                { q: "What is the main drawback of Basic access authentication?", opts: ["It uses a complex encryption algorithm", "It is time-consuming", "It has significant security weaknesses", "It requires a hardware token"], ans: 2 },
+                { q: "Which authentication method uses the MD5 hashing algorithm?", opts: ["Basic Access Authentication", "Single Sign-on Authentication", "Digest Access Authentication", "Two-Factor Authentication"], ans: 2 },
+                { q: "What does Single Sign-on allow a user to do?", opts: ["Use biometrics for web application authentication", "Log in to multiple, independently secured systems with one set of credentials", "Encrypt data both in transit and at rest", "Validate user inputs to prevent injection attacks"], ans: 1 },
+                { q: "Which factor is considered in three-factor authentication?", opts: ["Password and PIN", "Smart card and Passport", "Fingerprints, Private key, and Driver's license", "Password, Smart card, and Fingerprints"], ans: 3 },
+                { q: "What is a common standard for web application authentication?", opts: ["Biometrics", "Username and Password", "Security token", "Smart card"], ans: 1 }
+            ]
+        },
+        {
+            id: "u3", title: "الوحدة 3",
+            questions: [
+                { q: "What is a session ID?", opts: ["A permanent identifier for a user on a website", "A unique number ID assigned by a website server to a specific user for the duration the user is on the website", "A cookie that stores user data permanently", "A type of malware used to track users"], ans: 1 },
+                { q: "When is a new session ID created?", opts: ["Every time a user clicks a link", "When a user closes and reopens the web browser to visit a site", "When a user logs out of a website", "When a user changes their password"], ans: 1 },
+                { q: "What is session hijacking?", opts: ["An attack where the hacker uses brute force to predict and expose session tokens", "An attack where the hacker installs malware on the user's PC", "An attack where the hacker sends phishing emails to users", "An attack where the hacker changes the user's password"], ans: 0 },
+                { q: "What is session fixation?", opts: ["An attack that involves stealing user passwords.", "An attack that involves installing spyware on the user's PC", "An attack that enables attackers to hijack a user's valid session ID", "An attack that involves sending spam emails to users"], ans: 2 },
+                { q: "What is the Principle of Least Privilege in security?", opts: ["Allowing code to run with maximum permissions", "Allowing code to run without any permissions", "Allowing code to run with random permissions", "Allowing code to run with only the permissions needed to complete required tasks"], ans: 3 },
+                { q: "What is the main characteristic of Discretionary Access Controls (DAC)?", opts: ["Based on the roles of users", "Based on subjects' identity and need-to-know", "Based on the sensitivity of information", "Based on the attributes of the requesting entity"], ans: 1 },
+                { q: "Which access control model restricts subjects from setting security attributes on objects?", opts: ["Discretionary Access Control (DAC)", "Role-Based Access Control (RBAC)", "Attribute-Based Access Control (ABAC)", "Mandatory Access Control (MAC)"], ans: 3 },
+                { q: "What should be done to enforce Least Privileges horizontally and vertically?", opts: ["Grant all users the same level of access", "Deny access to all users by default", "Grant access based on the specific needs of different roles and levels", "Allow users to set their own access levels"], ans: 2 },
+                { q: "What does 'Deny by Default' mean in access control?", opts: ["Allow access unless explicitly denied", "Deny access unless explicitly permitted", "Allow access to all resources", "Deny access to all resources"], ans: 1 },
+                { q: "Why is it important to validate permissions on every request?", opts: ["To ensure confidentiality and integrity of resources", "To improve system performance", "To make the system more user-friendly", "To reduce the number of access control rules"], ans: 0 }
+            ]
+        },
+        {
+            id: "u4", title: "الوحدة 4",
+            questions: [
+                { q: "What is the primary purpose of client-side input validation?", opts: ["To enhance server performance", "To provide early issue detection and immediate user feedback", "To replace server-side validation", "To store user data securely"], ans: 1 },
+                { q: "Which of the following is NOT a recommended input validation technique?", opts: ["Using native data type validators in web application frameworks", "Validating against JSON Schema and XML Schema", "Allowing any input and filtering it later", "Implementing type conversion with strict exception handling"], ans: 2 },
+                { q: "Why is denylist validation considered flawed?", opts: ["It is too complex to implement", "It frequently prevents authorized input", "It is too slow for real-time applications", "It requires too much memory"], ans: 1 },
+                { q: "What is the primary means of input validation for free-form text input?", opts: ["Denylist validation", "Context-aware output encoding", "Normalization and character category allowlisting", "Using regular expressions"], ans: 2 },
+                { q: "Which of the following is a widely used protocol for client-side authentication?", opts: ["OAuth 2.0", "HTTP", "FTP", "SMTP"], ans: 0 },
+                { q: "What is the primary purpose of JSON Web Tokens in client-side authentication?", opts: ["To store user credentials securely", "To manage server load", "To enhance user interface design", "To encrypt data at rest"], ans: 0 },
+                { q: "What does Multi-Factor Authentication add to the authentication process?", opts: ["A single verification form", "An extra security layer", "Reduced server load", "Faster login times"], ans: 1 },
+                { q: "Which risk is associated with the inability to detect or prevent digital trackers and pixels across a web property?", opts: ["Vulnerable and Outdated Components", "Sensitive Data Leakage", "Lack of Third-party Origin Control", "Client-side Security Logging and Monitoring Failures"], ans: 1 },
+                { q: "Which of the following risks involves insufficient control of JavaScript access to client-side assets?", opts: ["DOM-based XSS", "Sensitive Data Leakage", "Broken Client-side Access Control", "JavaScript Drift"], ans: 2 },
+                { q: "What does the term 'JavaScript Drift' refer to?", opts: ["The inability to detect changes at the asset and code level in client-side JavaScript", "The presence of sensitive business logic in client-side code", "The lack of standard security features in browsers", "The storage of sensitive data in client-side storage"], ans: 0 }
+            ]
+        },
+        {
+            id: "u5", title: "الوحدة 5",
+            questions: [
+                { q: "What is the main difference between SQL Injection and Blind SQL Injection?", opts: ["Blind SQL Injection requires manipulating time, while SQL Injection involves guessing data", "Blind SQL Injection reveals data directly, while SQL Injection infers data based on responses", "SQL Injection requires sending yes/no questions, while Blind SQL Injection involves delaying query results", "SQL Injection allows directly revealing data in the application's output, while Blind SQL Injection infers data based on responses"], ans: 3 },
+                { q: "Which method is recommended for preventing variables from being interpreted as code when displaying data a user typed in?", opts: ["Templating", "Output Encoding", "Auto-Escaping", "HTML Sanitization"], ans: 1 },
+                { q: "What kind of attack involves inferring data based on responses by sending malicious queries?", opts: ["Inband SQL Injection", "Out-of-band SQL Injection", "Blind SQL Injection", "Cross-Site Scripting (XSS)"], ans: 2 },
+                { q: "What is the primary goal of SQL Injection attacks?", opts: ["To retrieve, modify, or delete data from the database", "To delay query results", "To validate user input data", "To encrypt data in transit"], ans: 0 },
+                { q: "Which type of SQL Injection attack directly extracts data using the same channel as the injected SQL code?", opts: ["Inband", "Out-of-band", "Inferential or Blind", "Double Submit Cookies"], ans: 0 },
+                { q: "What is a recommended defense against SQL injection attacks?", opts: ["Disabling database logging", "Using prepared statements with parameterized queries", "Allowing all input without validation", "Using dynamic queries"], ans: 3 },
+                { q: "What is a disadvantage of escaping user input before query execution?", opts: ["It is database-specific and weaker than other defenses", "It guarantees prevention of all SQL injections", "It enhances system performance", "It allows for dynamic query building"], ans: 0 },
+                { q: "Which tool is mentioned for detecting Blind Cross-Site Scripting?", opts: ["Wireshark", "Burp Suite", "XSS Hunter", "Metasploit"], ans: 2 },
+                { q: "What is crucial for preventing XSS attacks in modern web frameworks?", opts: ["Using dynamic queries", "Output Encoding and HTML Sanitization", "Disabling user inputs", "Allowing all input without validation"], ans: 1 },
+                { q: "What does HTML sanitization involve?", opts: ["Disabling all user input", "Encoding special characters and removing unsafe tags and attributes", "Automatically executing user scripts", "Encrypting all data sent to the server"], ans: 1 }
+            ]
+        },
+        {
+            id: "u6", title: "الوحدة 6",
+            questions: [
+                { q: "How can session cookies be stolen via Cross-Site Scripting (XSS)?", opts: ["By manipulating communication between user and server", "By injecting malicious scripts that steal cookies", "By physically accessing the user's device", "By encrypting the cookies"], ans: 0 },
+                { q: "What defense technique can help prevent XSS attacks?", opts: ["Encrypt data using HTTPS", "Use HttpOnly and Secure cookie attributes", "Include CSRF tokens in forms", "Implement Content Security Policy (CSP)"], ans: 3 },
+                { q: "How does an attacker use stolen session cookies to impersonate a user?", opts: ["By revealing the user's credentials", "By capturing physical access to the user's device", "By injecting malicious scripts into the server", "By tricking the server into thinking they are the legitimate user"], ans: 3 },
+                { q: "How can web developers protect cookies from being accessed by client-side scripts?", opts: ["Use HTTPS encryption", "Set Secure Cookie Attributes like HttpOnly and Secure", "Include CSRF tokens in forms", "Implement Content Security Policy (CSP)"], ans: 1 },
+                { q: "What is a recommended practice to prevent code injection vulnerabilities?", opts: ["Encrypt data using HTTPS", "Validate and Sanitize Inputs", "Use HttpOnly and Secure cookie attributes", "Include tokens in forms to prevent CSRF attacks"], ans: 1 },
+                { q: "How does an attacker trick a user into revealing their session cookies through social engineering?", opts: ["By intercepting network traffic", "By capturing physical access to the user's device", "By manipulating communications between user and server", "By using deceptive techniques like phishing"], ans: 3 },
+                { q: "Why is it important to regularly check and maintain third-party libraries in JavaScript applications?", opts: ["To improve application speed.", "To ensure application functionality.", "To avoid excessive permission requests.", "To mitigate security risks and ensure they are up-to-date."], ans: 3 },
+                { q: "How can developers prevent prototype pollution attacks in JavaScript?", opts: ["By using encryption protocols like HTTPS.", "By using deep cloning methods and libraries.", "By validating user input only on the client-side.", "By avoiding the use of third-party libraries."], ans: 1 },
+                { q: "Which of the following methods involves an attacker monitoring unencrypted network traffic to capture session cookies?", opts: ["Cross-site scripting (XSS)", "Packet sniffing", "Man-in-the-Middle (MitM) attacks", "Social engineering"], ans: 1 },
+                { q: "What is the term for attacks that manipulate HTTP cookies, potentially leading to session hijacking or account takeover?", opts: ["Cookie poisoning", "Packet sniffing", "Social engineering", "Physical access"], ans: 0 }
+            ]
+        },
+        {
+            id: "u7", title: "الوحدة 7",
+            questions: [
+                { q: "What is data interception in web application security?", opts: ["When unauthorized parties capture data during its transmission between two devices.", "When an attacker disguises themselves as a legitimate entity to deceive users or systems.", "When an attacker gains access to a user's session ID to impersonate the user.", "When hackers use email spoofing to gain access to sensitive information."], ans: 0 },
+                { q: "What is spoofing in web application security?", opts: ["When unauthorized parties capture data during its transmission between two devices.", "When an attacker disguises themselves as a legitimate entity to deceive users or systems.", "When an attacker gains access to a user's session ID to impersonate the user.", "When hackers use email spoofing to gain access to sensitive information."], ans: 1 },
+                { q: "What is session hijacking in web application security?", opts: ["When unauthorized parties capture data during its transmission between two devices.", "When an attacker disguises themselves as a legitimate entity to deceive users or systems.", "When an attacker gains access to a user's session ID to impersonate the user.", "When hackers use email spoofing to gain access to sensitive information."], ans: 2 },
+                { q: "How can IP spoofing be protected against?", opts: ["By verifying the source of incoming packets.", "By using email authentication methods like SPF, DKIM, and DMARC.", "By limiting access to sensitive data and training staff on safe browsing practices.", "By using firewalls, intrusion detection systems, and anti-malware software."], ans: 0 },
+                { q: "What should users be cautious of when it comes to data eavesdropping?", opts: ["Opening emails from unknown senders.", "Maintaining private passwords.", "Using public Wi-Fi cautiously.", "All of the above."], ans: 3 },
+                { q: "How can session hijacking be prevented?", opts: ["By verifying the source of incoming packets.", "By using email authentication methods like SPF, DKIM, and DMARC.", "By enabling encryption protocols like IPseC.", "By using intrusion detection systems."], ans: 2 },
+                { q: "What is a recommended protection method against email spoofing?", opts: ["Enable DNSSEC", "Use static ARP entries", "Use email authentication methods like SPF, DKIM, and DMARC", "Implement packet filtering"], ans: 2 },
+                { q: "What does DNS Spoofing involve?", opts: ["Sending falsified ARP messages to associate a MAC address with another device's IP address.", "Corrupting DNS records to redirect users to malicious sites.", "Sending packets with a forged IP address to appear as a trusted source.", "Sending emails from a forged sender address to trick recipients."], ans: 1 },
+                { q: "How can ARP Spoofing be prevented?", opts: ["Using email authentication methods like SPF, DKIM, and DMARC", "Implementing dynamic ARP inspection on network switches", "Enabling DNSSEC (Domain Name System Security Extensions)", "Implementing packet filtering"], ans: 1 },
+                { q: "What should be done to session IDs after a user logs in?", opts: ["They should be shared with other users.", "They should be regenerateD.", "They should be stored in plaintext.", "They should be ignoreD."], ans: 1 }
+            ]
+        },
+        {
+            id: "u8", title: "الوحدة 8",
+            questions: [
+                { q: "What type of web security vulnerability occurs when an attacker manipulates the XML input to a web service?", opts: ["SMTP Injection", "SOAP Injection", "LDAP Injection", "XPath Injection"], ans: 1 },
+                { q: "What is the key measure to protect web applications from SOAP Injection attacks?", opts: ["Increasing server storage capacity", "Validating all user inputs against strict rules", "Encrypting all outbound emails", "Using HTTP instead of HTTPS"], ans: 1 },
+                { q: "How can web applications protect against LDAP Injection attacks?", opts: ["Using parameterized queries", "Encrypting email communications", "Disabling user input fields", "Using a dedicated email server."], ans: 0 },
+                { q: "In Back-End Request Injection, what can attackers potentially achieve?", opts: ["Unauthorized access to sensitive data", "Session hijacking", "Other malicious activities", "All of the above"], ans: 3 },
+                { q: "What can SMTP Injection lead to when user input is improperly sanitized before being included in email headers?", opts: ["Cross-Site Scripting", "Arbitrary Content Injection", "SQL Injection", "Denial of Service."], ans: 1 },
+                { q: "What can an attacker potentially do by exploiting XPath Injection?", opts: ["Modify file permissions", "Execute arbitrary SQL commands", "Access or modify data within an XML document", "Send emails to unintended recipients."], ans: 2 },
+                { q: "What type of malicious input can attackers inject to exploit SMTP Injection vulnerabilities?", opts: ["SQL commands", "Special characters", "JavaScript code", "Malicious URLs."], ans: 1 },
+                { q: "What does Back-End Request Injection exploit to bypass front-end security controls?", opts: ["SQL commands", "JavaScript code", "Ambiguous HTTP requests", "Malicious URLs."], ans: 2 },
+                { q: "What technique is used in Back-End Request Injection to exploit inconsistencies in how HTTP requests are parsed by different servers?", opts: ["SQL Injection", "Cross-Site Scripting (XSS)", "Request Smuggling", "Remote Code Execution."], ans: 2 },
+                { q: "What can attackers achieve by manipulating XML input in SOAP Injection attacks?", opts: ["Accessing or modifying sensitive data", "Changing file permissions", "Executing arbitrary SQL commands", "Sending emails to unintended recipients"], ans: 0 }
+            ]
+        },
+        {
+            id: "u9", title: "الوحدة 9",
+            questions: [
+                { q: "What is a primary challenge in ensuring the security of web applications?", opts: ["The simplicity of web application design", "The complexity of application logic", "The effectiveness of firewalls", "The use of antivirus software"], ans: 1 },
+                { q: "Which of the following is NOT a common vulnerability in web applications?", opts: ["SQL injection", "Cross-site scripting", "Logic flaws", "Buffer overflow"], ans: 3 },
+                { q: "Why are application logic flaws often overlooked in web security?", opts: ["They are easily detected by automated scanners", "They are less common than SQL injection", "They are harder to characterize and identify", "They do not exist in modern applications"], ans: 2 },
+                { q: "What is a common characteristic of logic flaws in applications?", opts: ["They can only occur in financial applications.", "They often stem from mistakes made by human developers.", "They are always easy to identify.", "They require no analysis to understand."], ans: 1 },
+                { q: "In the context of a password change function, what distinguishes the administrator's interface from the user's interface?", opts: ["The administrator's interface does not require the existing password.", "The administrator's interface has more fields than the user's interface.", "The administrator's interface requires the existing password.", "The administrator's interface is only accessible during business hours."], ans: 0 },
+                { q: "What is the best way to learn about logic flaws according to the content?", opts: ["By theorizing about potential flaws.", "By reading about programming languages.", "By studying actual examples of logic flaws.", "By attending workshops on application security."], ans: 2 },
+                { q: "Application logic attacks are easily detected by traditional security measures like firewalls and antivirus software.", opts: ["True", "False"], ans: 1 },
+                { q: "What flaw did the developers assume about the ordering process?", opts: ["Users would follow the intended sequence of stages", "Users would always pay before finalizing the order", "Users could not access stages out of order", "Users would not qualify for discounts"], ans: 0 },
+                { q: "Lateral thinking is essential for attackers to analyze logic used in applications.", opts: ["True", "False"], ans: 0 },
+                { q: "What was the primary cause of the vulnerability that allowed an attacker to reset any user's password?", opts: ["The client-side interface did not encrypt the password fields.", "The administrator's interface did not require the existing password.", "The server-side application used the presence or absence of the existing password parameter to determine the type of request.", "The server-side script did not validate the new password."], ans: 2 }
+            ]
+        },
+        {
+            id: "u10", title: "الوحدة 10",
+            questions: [
+                { q: "What is a key characteristic of shared hosting?", opts: ["Only one website can be hosted at a time", "Multiple websites share the same server resources", "Each website has its own dedicated server", "All websites have equal access to the server's hardware"], ans: 1 },
+                { q: "What is a potential risk associated with shared hosting environments?", opts: ["Malicious customers interfering with applications", "Isolation from other websites", "Increased server speed", "Guaranteed data security"], ans: 0 },
+                { q: "What should organizations consider when using shared application services?", opts: ["The availability of customer support", "The cost of dedicated servers", "The potential for malicious applications from other users", "The ease of migrating to a different service"], ans: 2 },
+                { q: "What is a primary concern when using remote access mechanisms?", opts: ["Limited access to applications", "Unencrypted FTP protocols", "High cost of services", "Strong encryption methods"], ans: 1 },
+                { q: "What do many credit card providers use to deliver their web applications?", opts: ["Direct database connections", "Custom-built software", "Application Service Providers (ASP)", "Encrypted channels"], ans: 2 },
+                { q: "What can vulnerabilities in customized applications lead to?", opts: ["Improved security measures", "Interference with core functionality", "Increased customer trust", "Enhanced application performance"], ans: 1 },
+                { q: "What is a potential consequence of a path traversal vulnerability in an application?", opts: ["It allows an attacker to read or write any files on the server filesystem.", "It prevents unauthorized access to the server.", "It enhances the security of the application.", "It automatically encrypts sensitive data."], ans: 0 },
+                { q: "Which statement accurately reflects the risks associated with remote access in shared hosting environments?", opts: ["Databases in shared hosting environments are always properly segregated and use encrypted channels.", "Remote access mechanisms are always secure if they use FTP protocols.", "Vulnerabilities in customized applications for remote access can allow malicious users to interfere with and modify core functionality.", "Shared hosting environments do not allow customers to upload and execute arbitrary scripts on the server."], ans: 2 },
+                { q: "What is a key consideration for securing shared environments?", opts: ["Implementing unique controls and segregation of customer access.", "Allowing unrestricted access to all customers.", "Using only one type of remote access protocol.", "Ensuring all applications are hosted on a single server."], ans: 0 },
+                { q: "What is the primary focus when securing shared components in an application service provider (ASP) environment?", opts: ["Enforcing trust boundaries", "Ignoring shared logging functions", "Trusting shared data from customized components", "Allowing unrestricted access to administrative functions."], ans: 0 }
+            ]
+        },
+
+        // =====================================
+        // الواجبات والأنشطة 1
+        // =====================================
+        {
+            id: "hw1", title: "الواجب 1",
+            questions: [
+                { q: "SQL is commonly used for front-end web development to enhance user interfaces", opts: ["True", "False"], ans: 1 },
+                { q: "Dynamic content in web applications is created on the fly and can be customized for each user", opts: ["True", "False"], ans: 0 },
+                { q: "HTML is a scripting language used on the server-side.", opts: ["True", "False"], ans: 1 },
+                { q: "Most Ajax applications use synchronous communications with the server.", opts: ["True", "False"], ans: 1 },
+                { q: "Server-side controls can completely eliminate the risk of SQL injection attacks.", opts: ["True", "False"], ans: 1 },
+                { q: "Implementing proper session management on the server-side helps prevent session hijacking.", opts: ["True", "False"], ans: 0 },
+                { q: "The Digest access authentication method uses the MD5 hashing algorithm.", opts: ["True", "False"], ans: 0 },
+                { q: "Session fixation is a type of attack that involves sending phishing emails to users.", opts: ["True", "False"], ans: 1 },
+                { q: "Enforcing Least Privileges means granting all users the same level of access.", opts: ["True", "False"], ans: 0 },
+                { q: "Cross-site scripting protection relies primarily on input validation.", opts: ["True", "False"], ans: 1 }
+            ]
+        },
+        {
+            id: "act1", title: "النشاط 1",
+            questions: [
+                { q: "Credential stuffing relies on the tendency of users to reuse passwords.", opts: ["True", "False"], ans: 0 },
+                { q: "Attackers use bots to test millions of compromised credentials on different websites.", opts: ["True", "False"], ans: 1 },
+                { q: "Successful credential stuffing attacks can lead to data breaches, financial loss, and damage to a company's reputation.", opts: ["True", "False"], ans: 0 },
+                { q: "Secure authentication is the second line of defense against credential stuffing.", opts: ["True", "False"], ans: 1 },
+                { q: "Multi-Factor Authentication (MFA) requires users to provide only one verification factor to access their accounts.", opts: ["True", "False"], ans: 1 },
+                { q: "Users can enroll in MFA by linking their accounts to an additional factor like a mobile app, email, or hardware token.", opts: ["True", "False"], ans: 0 },
+                { q: "SMS codes and email links are examples of MFA verification methods.", opts: ["True", "False"], ans: 0 },
+                { q: "A password policy should require at least 8 characters, including upper and lowercase letters, numbers, and special characters.", opts: ["True", "False"], ans: 0 },
+                { q: "Strong, adaptive, and salted hashing algorithms such as bcrypt and scrypt should be used to store passwords securely.", opts: ["True", "False"], ans: 0 },
+                { q: "Password recovery mechanisms should rely on knowledge-based questions for maximum security.", opts: ["True", "False"], ans: 1 }
+            ]
+        },
+
+        // =====================================
+        // الواجبات والأنشطة 2
+        // =====================================
+        {
+            id: "hw2", title: "الواجب 2",
+            questions: [
+                { q: "Client-side validation alone is sufficient to ensure optimal application security.", opts: ["True", "False"], ans: 1 },
+                { q: "Prototype pollution can result in data corruption and remote code execution by injecting properties or methods into an object's prototype.", opts: ["True", "False"], ans: 0 },
+                { q: "Data interception occurs when unauthorized parties intercept and capture sensitive information as it travels across the Internet.", opts: ["True", "False"], ans: 0 },
+                { q: "IP spoofing protection methods include using email authentication methods like SPF, DKIM, and DMARC.", opts: ["True", "False"], ans: 1 },
+                { q: "XPath Injection allows attackers to manipulate user input to alter SQL queries used by a web application.", opts: ["True", "False"], ans: 1 },
+                { q: "Input validation and sanitization are essential measures to protect against SOAP Injection attacks.", opts: ["True", "False"], ans: 0 },
+                { q: "Logic flaws in web applications can be easily identified by common signatures similar to SQL injection or cross-site scripting.", opts: ["True", "False"], ans: 1 },
+                { q: "An ordinary user could exploit a logic flaw in a password change function by omitting the existing password parameter, thereby resetting any user's password.", opts: ["True", "False"], ans: 0 },
+                { q: "Shared hosting arrangements allow web servers to support multiple virtual web sites with different domain names.", opts: ["True", "False"], ans: 0 },
+                { q: "Remote access mechanisms are always secure and do not allow attackers to capture login credentials.", opts: ["True", "False"], ans: 1 }
+            ]
+        },
+        {
+            id: "act2", title: "النشاط 2",
+            questions: [
+                { q: "How should JWT tokens be managed to minimize security risks?", opts: ["Use long-lived tokens without expiration", "Invalidate tokens after logout", "Store tokens in plain text", "Allow tokens to be shared across users"], ans: 1 },
+                { q: "Bypassing access control checks can be achieved by modifying the URL or using an attack tool to modify API requests.", opts: ["True", "False"], ans: 0 },
+                { q: "What is the purpose of using initialization vectors (IVs) in encryption?", opts: ["To compress the data", "To simplify encryption", "To introduce randomness", "To increase the encryption speed"], ans: 2 },
+                { q: "FTP and SMTP are recommended protocols for transporting sensitive data.", opts: ["True", "False"], ans: 1 },
+                { q: "What should be done to prevent SQL injection in dynamic queries?", opts: ["Allow user-supplied structure names", "Use special characters without escape syntax", "Escape special characters using the specific escape syntax for that interpreter", "Disable user input"], ans: 2 },
+                { q: "Automated testing of parameters, headers, URL, cookies, JSON, SOAP, and XML data inputs is recommended to identify injection flaws.", opts: ["True", "False"], ans: 0 },
+                { q: "What differentiates insecure design from insecure implementation?", opts: ["Insecure design can be fixed with a perfect implementation", "Insecure implementation has different root causes and remediation than insecure design", "Insecure design always leads to the most severe vulnerabilities", "Insecure implementation requires no separate security considerations"], ans: 1 },
+                { q: "Secure software requires a secure development lifecycle that includes secure design patterns, tooling, and threat modeling.", opts: ["True", "False"], ans: 0 },
+                { q: "What is one of the recommended steps to prevent security misconfigurations?", opts: ["Use a minimal platform without unnecessary features", "Enable all features and components by default", "Avoid updating cloud storage permissions", "Use the same credentials across all environments"], ans: 0 },
+                { q: "Error handling should reveal stack traces and overly informative error messages to users.", opts: ["True", "False"], ans: 1 },
+                { q: "What should be done with components that are unmaintained or do not receive security patches?", opts: ["Continue using them without changes", "Ignore the risks and focus on new features", "Remove them from the system immediately", "Deploy a virtual patch to monitor, detect, or protect against issues"], ans: 3 },
+                { q: "Regularly reviewing and updating the configurations of components is a key step in preventing security misconfigurations.", opts: ["True", "False"], ans: 0 },
+                { q: "What is essential to ensure when managing session identifiers?", opts: ["Expose session identifiers in the URL", "Reuse session identifiers after login", "Generate a new random session ID with high entropy after login", "Ignore session identifier security"], ans: 2 },
+                { q: "User sessions or authentication tokens should not be invalidated after logout or a period of inactivity.", opts: ["True", "False"], ans: 1 },
+                { q: "What is a recommended practice to ensure software integrity?", opts: ["Using components from untrusted sources", "Verifying software with digital signatures", "Ignoring configuration changes", "Disabling auto-update functionality"], ans: 1 },
+                { q: "A review process for code and configuration changes helps minimize the introduction of malicious code.", opts: ["True", "False"], ans: 0 },
+                { q: "What should be done to prevent information leakage through logging and alerting events?", opts: ["Make all logs and alerts visible to users", "Store logs only locally", "Ensure logs do not reveal sensitive information to users", "Disable logging entirely"], ans: 2 },
+                { q: "Storing logs only locally improves the detection of breaches.", opts: ["True", "False"], ans: 1 },
+                { q: "Which of the following is a recommended network layer defense against SSRF?", opts: ["Allowing all traffic by default", "Using a single network for all applications", "Disabling firewall policies", "Segmenting remote resource access functionality in separate networks"], ans: 3 },
+                { q: "HTTP redirections should be enabled to prevent SSRF attacks.", opts: ["True", "False"], ans: 1 }
+            ]
+        },
+
+        // =====================================
+        // الميدتيرم (Midterm)
+        // =====================================
+        {
+            id: "mid", title: "اختبار الميد",
+            questions: [
+                { q: "Which input validation technique checks email format?", opts: ["Data Range Validation", "Required Field Validation", "Data Format Validation", "Data Type Validation"], ans: 2 },
+                { q: "What does 'Deny by Default' mean in access control?", opts: ["Allow access unless explicitly denied", "Deny access unless explicitly permitted", "Allow access to all resources", "Deny access to all resources"], ans: 1 },
+                { q: "What is a session ID?", opts: ["A permanent identifier for a user on a website", "A unique number ID assigned by a website server to a specific user for the duration the user is on the website", "A cookie that stores user data permanently", "A type of malware used to track users"], ans: 1 },
+                { q: "Which access control model restricts subjects from setting security attributes on objects?", opts: ["Discretionary Access Control (DAC)", "Role-Based Access Control (RBAC)", "Attribute-Based Access Control (ABAC)", "Mandatory Access Control (MAC)"], ans: 3 },
+                { q: "Browsers do not automatically reissue GET requests made by users, because these requests might cause an action to be performed more than once.", opts: ["True", "False"], ans: 1 },
+                { q: "Which HTTP request header specifies the URL from which the current request originated?", opts: ["Content-Type", "User-Agent", "Content-Encoding", "Referer"], ans: 3 },
+                { q: "Which server-side control involves keeping detailed logs of user activities and monitoring for suspicious behavior?", opts: ["Input Validation", "Access Control", "Data Protection", "Logging and Monitoring"], ans: 3 },
+                { q: "Why is Digest access authentication vulnerable to a man-in-the-middle attack?", opts: ["It uses plaintext passwords", "It can be tricked into downgrading security", "It requires a password reset", "It lacks nonce values"], ans: 1 },
+                { q: "What are the two steps involved in the authentication process?", opts: ["Verification and Authorization", "Identification and Confirmation", "Authentication and Encryption", "Validation and Verification"], ans: 0 },
+                { q: "Which risk is associated with the presence of sensitive business logic, developer comments, proprietary algorithms, or system information contained in client-side code or stored data?", opts: ["Vulnerable and Outdated Components", "Including Proprietary Information on the Client-Side", "Sensitive Data Leakage", "Broken Client-side Access Control"], ans: 2 },
+                { q: "Which type of cookie is instantiated without an explicit expiration attribute, resides solely in volatile memory, and is automatically discarded once the browser session ends?", opts: ["Third-party cookie", "A persistent cookie", "First-party cookie", "A session cookie"], ans: 3 },
+                { q: "Which HTTP status code indicates that the request was successful?", opts: ["404", "500", "200", "401"], ans: 2 },
+                { q: "What is a potential downside of using Ajax in web applications?", opts: ["Reduced interactivity", "Increased attack surface", "Slower performance", "Less dynamic content"], ans: 1 },
+                { q: "Which HTTP method is designed for retrieving resources?", opts: ["POST", "GET", "PUT", "DELETE"], ans: 1 },
+                { q: "Which server-side control involves ensuring the security of server and application configurations by hardening the OS, web server, DB, etc.?", opts: ["Error Handling and Data Protection", "Logging and Monitoring", "Security Configurations", "Access Control and Session Management"], ans: 2 },
+                { q: "Why is denylist validation considered flawed?", opts: ["It is too complex to implement", "It frequently prevents authorized input", "It is too slow for real-time applications", "It requires too much memory"], ans: 1 },
+                { q: "What does the term 'JavaScript Drift' refer to?", opts: ["The inability to detect changes at the asset and code level in client-side JavaScript", "The presence of sensitive business logic in client-side code", "The lack of standard security features in browsers", "The storage of sensitive data in client-side storage"], ans: 0 },
+                { q: "Which risk is associated with the inability to detect or prevent digital trackers and pixels across a web property?", opts: ["Vulnerable and Outdated Components", "Sensitive Data Leakage", "Lack of Third-party Origin Control", "Client-side Security Logging and Monitoring Failures"], ans: 2 },
+                { q: "Basic Access Authentication is considered insecure because it is based on Base64 encoding, credentials are exposed repeatedly, and it may lead to insecure storage.", opts: ["True", "False"], ans: 0 },
+                { q: "At which level should input validation be applied?", opts: ["Syntactic level", "Semantic level", "Both syntactic and semantic levels", "None of them"], ans: 2 }
+            ]
+        },
+
+        // =====================================
+        // الفاينل (Final Exam)
+        // =====================================
+        {
+            id: "final", title: "الفاينل الشامل",
+            questions: [
+                { q: "A review process for code and configuration changes helps minimize the introduction of malicious code.", opts: ["True", "False"], ans: 0 },
+                { q: "An ordinary user could exploit a logic flaw in a password change function by omitting the existing password parameter, thereby resetting any user's password.", opts: ["True", "False"], ans: 0 },
+                { q: "Automated testing of parameters, headers, URL, cookies, JSON, SOAP, and XML data inputs is recommended to identify injection flaws.", opts: ["True", "False"], ans: 0 },
+                { q: "Client-side validation alone is sufficient to ensure optimal application security.", opts: ["True", "False"], ans: 1 },
+                { q: "Data interception occurs when unauthorized parties intercept and capture sensitive information as it travels across the Internet.", opts: ["True", "False"], ans: 0 },
+                { q: "Error handling should reveal stack traces and overly informative error messages to users.", opts: ["True", "False"], ans: 1 },
+                { q: "FTP and SMTP are recommended protocols for transporting sensitive data.", opts: ["True", "False"], ans: 1 },
+                { q: "Function-based vulnerabilities cannot be exploited if the web application uses HTTPS.", opts: ["True", "False"], ans: 1 },
+                { q: "HTTP redirections should be enabled to prevent SSRF attacks.", opts: ["True", "False"], ans: 1 },
+                { q: "How can ARP Spoofing be prevented?", opts: ["Implementing dynamic ARP inspection on Network switches.", "Using only HTTP headers.", "Disabling firewalls completely.", "Increasing user password length."], ans: 0 },
+                { q: "How can IP spoofing be protected against?", opts: ["By ignoring all incoming emails.", "By verifying the source of incoming packets.", "By disabling the domain name system.", "By using default administrator accounts."], ans: 1 },
+                { q: "How can developers prevent prototype pollution attacks in JavaScript?", opts: ["By avoiding all client-side scripts.", "By using deep cloning methods and libraries.", "By removing JSON support.", "By disabling CSS."], ans: 1 },
+                { q: "How can session hijacking be prevented?", opts: ["By enabling encryption protocols like IPsec.", "By exposing session IDs in the URL.", "By setting cookie expiration to never.", "By using Basic Authentication."], ans: 0 },
+                { q: "How can web applications protect against LDAP Injection attacks?", opts: ["Disabling active directory.", "Using plain text queries.", "Using parameterized queries.", "Trusting user input on login forms."], ans: 2 },
+                { q: "How can web developers protect cookies from being accessed by client-side scripts?", opts: ["Store cookies in LocalStorage instead.", "Set Secure Cookie Attributes like HttpOnly and Secure.", "Encrypt the client's hard drive.", "Allow CORS universally."], ans: 1 },
+                { q: "How does an attacker trick a user into revealing their session cookies through social engineering?", opts: ["By using a brute force script.", "By using SQL injection.", "By using deceptive techniques like phishing.", "By exploiting a buffer overflow."], ans: 2 },
+                { q: "How does an attacker use stolen session cookies to impersonate a user?", opts: ["By decrypting the AES keys.", "By downloading the user's database.", "By tricking the server into thinking they are the legitimate user.", "By physically accessing the server room."], ans: 2 },
+                { q: "How should JWT tokens be managed to minimize security risks?", opts: ["Keep them valid forever.", "Invalidate tokens after logout.", "Store them in the browser's URL history.", "Share them between different accounts."], ans: 1 },
+                { q: "In Back-End Request Injection, what can attackers potentially achieve?", opts: ["Only viewing public HTML files.", "Unauthorized access to sensitive data, Session hijacking, and Other malicious activities.", "Increasing the application's speed.", "Nothing, it's a theoretical risk only."], ans: 1 },
+                { q: "In a financial web service, a logic flaw allowed an attacker to reset the password of any user. What was the primary cause of this vulnerability?", opts: ["Insufficient validation and authentication checks.", "Using HTTPS instead of HTTP.", "Having an overly complex interface.", "Using a NoSQL database."], ans: 0 },
+                { q: "In the context of a password change function, what distinguishes the administrator's interface from the user's interface?", opts: ["The administrator's interface does not require the existing password.", "The administrator cannot change passwords.", "The user interface does not require the new password.", "Both interfaces are identical in logic."], ans: 0 },
+                { q: "Input validation and sanitization are essential measures to protect against SOAP Injection attacks.", opts: ["True", "False"], ans: 0 },
+                { q: "Logic flaws in web applications can be easily identified by common signatures similar to SQL injection or cross-site scripting.", opts: ["True", "False"], ans: 1 },
+                { q: "Prototype pollution can result in data corruption and remote code execution by injecting properties or methods into an object's prototype.", opts: ["True", "False"], ans: 0 },
+                { q: "Remote access mechanisms are always secure and do not allow attackers to capture login credentials.", opts: ["True", "False"], ans: 1 },
+                { q: "Secure software requires a secure development lifecycle that includes secure design patterns, tooling, and threat modeling.", opts: ["True", "False"], ans: 0 },
+                { q: "Shared hosting arrangements allow web servers to support multiple virtual web sites with different domain names.", opts: ["True", "False"], ans: 0 },
+                { q: "Storing logs only locally improves the detection of breaches.", opts: ["True", "False"], ans: 1 },
+                { q: "What differentiates insecure design from insecure implementation?", opts: ["Design cannot be patched, only implementation can.", "Insecure implementation has different root causes and remediation than insecure design.", "Implementation flaws are only found in databases.", "They are exactly the same concept."], ans: 1 },
+                { q: "What does DNS Spoofing involve?", opts: ["Sending malware attachments in emails.", "Corrupting DNS records to redirect users to malicious sites.", "Guessing user passwords.", "Encrypting user files for ransom."], ans: 1 },
+                { q: "What is a common characteristic of logic flaws in applications?", opts: ["They are caught easily by standard firewalls.", "They often stem from mistakes made by human developers.", "They only occur in open-source applications.", "They require physical access to the server."], ans: 1 },
+                { q: "What is a primary challenge in ensuring the security of web applications?", opts: ["The complexity of application logic.", "The high cost of SSL certificates.", "The lack of programming languages.", "The speed of the internet connection."], ans: 0 },
+                { q: "What is a recommended practice to ensure software integrity?", opts: ["Verifying software with digital signatures.", "Downloading code from unverified sources.", "Disabling all logging mechanisms.", "Using obsolete encryption algorithms."], ans: 0 },
+                { q: "What is a recommended protection method against email spoofing?", opts: ["Use only POP3 protocol.", "Use email authentication methods like SPF, DKIM, and DMARC.", "Disable email servers.", "Set passwords to never expire."], ans: 1 },
+                { q: "What is essential to ensure when managing session identifiers?", opts: ["Reusing old identifiers for convenience.", "Generate a new random session ID with high entropy after login.", "Exposing them in the URL parameters.", "Making them short and predictable."], ans: 1 },
+                { q: "What is one of the recommended steps to prevent security misconfigurations?", opts: ["Leaving default passwords unchanged.", "Use a minimal platform without unnecessary features.", "Enabling all available services and ports.", "Disabling security patches."], ans: 1 },
+                { q: "What is the best way to learn about logic flaws according to the content?", opts: ["By studying actual examples of logic flaws.", "By ignoring application testing.", "By focusing only on network security.", "By writing theoretical papers."], ans: 0 },
+                { q: "What should be done to prevent SQL injection in dynamic queries?", opts: ["Use client-side validation only.", "Escape special characters using the specific escape syntax for that interpreter.", "Disable SQL databases completely.", "Use NoSQL without validation."], ans: 1 },
+                { q: "What should be done to prevent information leakage through logging and alerting events?", opts: ["Ensure logs do not reveal sensitive information to users.", "Broadcast logs to all users.", "Delete all logs daily without review.", "Store logs in the public web directory."], ans: 0 },
+                { q: "XPath Injection allows attackers to manipulate user input to alter SQL queries used by a web application.", opts: ["True", "False"], ans: 1 }
+            ]
+        }
+    ];
+
+    const tabsBar = document.getElementById('tabsBar');
+    const contentSections = document.getElementById('contentSections');
+
+    function buildQuiz() {
+        completeDatabase.forEach((section, sIdx) => {
+            // 1. توليد الأزرار العلوية للتبويبات
+            const tabBtn = document.createElement('button');
+            tabBtn.type = 'button';
+            tabBtn.className = `tab-btn ${sIdx === 0 ? 'active' : ''}`;
+            tabBtn.innerText = section.title;
+            tabBtn.onclick = (e) => switchTab(sIdx, e.target);
+            tabsBar.appendChild(tabBtn);
+
+            // 2. توليد المحتوى (الأسئلة والخيارات)
+            const secDiv = document.createElement('div');
+            secDiv.className = `section-content ${sIdx === 0 ? 'active' : ''}`;
+            secDiv.id = `sec-${sIdx}`;
+
+            let html = `
+                <div class="section-header">
+                    <h2 class="section-title">${section.title}</h2>
+                    <span class="question-count-badge">${section.questions.length} أسئلة</span>
+                </div>
+            `;
+
+            section.questions.forEach((qObj, qIdx) => {
+                let optionsHtml = '';
+                qObj.opts.forEach((optText, oIdx) => {
+                    optionsHtml += `
+                        <li>
+                            <label class="option-label" id="lbl-${sIdx}-${qIdx}-${oIdx}">
+                                <input type="radio" name="q_${sIdx}_${qIdx}" value="${oIdx}">
+                                <span>${optText}</span>
+                            </label>
+                        </li>
+                    `;
+                });
+
+                html += `
+                    <div class="question-card">
+                        <div class="question-text">${qIdx + 1}. ${qObj.q}</div>
+                        <ul class="options-group">
+                            ${optionsHtml}
+                        </ul>
+                    </div>
+                `;
+            });
+
+            // إضافة زر التسليم ومربع النتيجة لكل قسم
+            html += `
+                <div class="submit-area">
+                    <button type="button" class="action-btn" onclick="gradeSection(${sIdx})">
+                        تحقق من الإجابات (${section.title})
+                    </button>
+                    <div class="score-display" id="res-${sIdx}"></div>
+                </div>
+            `;
+
+            secDiv.innerHTML = html;
+            contentSections.appendChild(secDiv);
+        });
+    }
+
+    function switchTab(targetIdx, clickedBtn) {
+        document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+            btn.classList.toggle('active', idx === targetIdx);
+        });
+
+        document.querySelectorAll('.section-content').forEach((sec, idx) => {
+            sec.classList.toggle('active', idx === targetIdx);
+        });
+
+        clickedBtn.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+    }
+
+    function gradeSection(sIdx) {
+        const secData = completeDatabase[sIdx];
+        let correctCount = 0;
+        let missed = false;
+
+        secData.questions.forEach((qObj, qIdx) => {
+            const selected = document.querySelector(`input[name="q_${sIdx}_${qIdx}"]:checked`);
+            
+            // إزالة التنسيقات السابقة
+            qObj.opts.forEach((_, oIdx) => {
+                document.getElementById(`lbl-${sIdx}-${qIdx}-${oIdx}`).classList.remove('correct-answer', 'wrong-answer');
+            });
+
+            if (selected) {
+                const userVal = parseInt(selected.value);
+                if (userVal === qObj.ans) {
+                    correctCount++;
+                    document.getElementById(`lbl-${sIdx}-${qIdx}-${userVal}`).classList.add('correct-answer');
+                } else {
+                    document.getElementById(`lbl-${sIdx}-${qIdx}-${userVal}`).classList.add('wrong-answer');
+                    // إظهار الصحيحة للمستخدم
+                    document.getElementById(`lbl-${sIdx}-${qIdx}-${qObj.ans}`).classList.add('correct-answer');
+                }
+            } else {
+                missed = true;
+                document.getElementById(`lbl-${sIdx}-${qIdx}-${qObj.ans}`).classList.add('correct-answer');
+            }
+        });
+
+        // عرض النتيجة
+        const resBox = document.getElementById(`res-${sIdx}`);
+        resBox.style.display = 'block';
+        const total = secData.questions.length;
+        const percent = Math.round((correctCount / total) * 100);
+
+        if (percent >= 60) {
+            resBox.style.backgroundColor = '#d1fae5';
+            resBox.style.color = '#065f46';
+            resBox.style.border = '2px solid #10b981';
+            resBox.innerHTML = `✅ مبدع! نتيجتك: <strong>${correctCount} / ${total}</strong> (${percent}%)`;
+        } else {
+            resBox.style.backgroundColor = '#ffe4e6';
+            resBox.style.color = '#9f1239';
+            resBox.style.border = '2px solid #e11d48';
+            resBox.innerHTML = `⚠️ نتيجتك: <strong>${correctCount} / ${total}</strong> (${percent}%) - يُرجى مراجعة الإجابات الصحيحة (بالأخضر).`;
+        }
+
+        if (missed) {
+            resBox.innerHTML += `<br><span style="font-size:0.85rem; color:#475569; font-weight:normal;">(ملاحظة: هناك أسئلة لم تقم بالإجابة عليها)</span>`;
+        }
+
+        resBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    window.onload = buildQuiz;
+</script>
+
+</body>
+</html>
